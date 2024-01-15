@@ -3,7 +3,7 @@ module Drafting
     def save_draft(user=nil)
       # return false unless self.new_record?
 
-      draft = Draft.where(target_type: self.class.name, target_id: self.draft_id).first || Draft.new
+      draft = Draft.where(target_type: self.class.name, target_id: self.id).first || Draft.new
 
       draft.data = dump_to_draft
       draft.target_type = self.class.name
@@ -35,6 +35,11 @@ module Drafting
       values.each do |name, value|
         instance_variable_set("@#{name}", value)
       end
+    end
+
+
+    def drafts
+      Draft.where(target_type: self.class.name, target_id: self.id)
     end
 
   private
