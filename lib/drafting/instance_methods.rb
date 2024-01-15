@@ -3,10 +3,11 @@ module Drafting
     def save_draft(user=nil)
       # return false unless self.new_record?
 
-      draft = Draft.find_by_id(self.draft_id) || Draft.new
+      draft = Draft.where(target_type: self.class.name, target_id: self.draft_id).first || Draft.new
 
       draft.data = dump_to_draft
       draft.target_type = self.class.name
+      draft.target_id = self.id
       draft.user_id = user.try(:id)
       draft.user_type = user.try(:class).try(:name)
       draft.parent = self.send(self.class.draft_parent) if self.class.draft_parent
