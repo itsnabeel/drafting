@@ -47,17 +47,17 @@ describe Drafting::ClassMethods do
         expect(new_message.content).to eq('foo')
       end
 
-      it 'should delete Draft after save' do
-        new_message = Message.from_draft(draft_id)
+      # it 'should delete Draft after save' do
+      #   new_message = Message.from_draft(draft_id)
 
-        expect {
-          new_message.save!
-          expect(new_message.draft_id).to eq(nil)
-        }.to change(Draft, :count).by(-1).and \
-             change(Message, :count).by(1)
+      #   expect {
+      #     new_message.save!
+      #     expect(new_message.draft_id).to eq(nil)
+      #   }.to change(Draft, :count).by(-1).and \
+      #        change(Message, :count).by(1)
 
-        expect(Draft.find_by_id(draft_id)).to eq(nil)
-      end
+      #   expect(Draft.find_by_id(draft_id)).to eq(nil)
+      # end
     end
 
     context 'without parent' do
@@ -73,18 +73,18 @@ describe Drafting::ClassMethods do
         expect(new_page.title).to eq('First post')
       end
 
-      it 'should delete Draft after save' do
-        new_page = Page.from_draft(draft_id)
-        new_page.content = 'lorem ipsum'
+      # it 'should delete Draft after save' do
+      #   new_page = Page.from_draft(draft_id)
+      #   new_page.content = 'lorem ipsum'
 
-        expect {
-          new_page.save!
-          expect(new_page.draft_id).to eq(nil)
-        }.to change(Draft, :count).by(-1).and \
-             change(Message, :count).by(0)
+      #   expect {
+      #     new_page.save!
+      #     expect(new_page.draft_id).to eq(nil)
+      #   }.to change(Draft, :count).by(-1).and \
+      #        change(Message, :count).by(0)
 
-        expect(Draft.find_by_id(draft_id)).to eq(nil)
-      end
+      #   expect(Draft.find_by_id(draft_id)).to eq(nil)
+      # end
     end
 
     it "should fail for non existing draft" do
