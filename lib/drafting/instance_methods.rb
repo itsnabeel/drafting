@@ -22,8 +22,8 @@ module Drafting
       end
     end
 
-    def clear_user_drafts
-      Draft.where(user: user).where(draftable_type: self.class.name, draftable_id: self.id).destroy_all
+    def clear_user_drafts(user)
+      Draft.where(user_id: user.id).where(draftable_type: self.class.name, draftable_id: self.id).destroy_all
     end
 
     def clear_drafts
