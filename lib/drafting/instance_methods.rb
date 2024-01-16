@@ -1,13 +1,11 @@
 module Drafting
   module InstanceMethods
     def save_draft(user=nil)
-      # return false unless self.new_record?
+      draft = Draft.where(user: user).where(draftable_type: self.class.name, draftable_id: self.id).first || Draft.new
 
-      draft = Draft.where(target_type: self.class.name, target_id: self.id).first || Draft.new
-
-      draft.data = dump_to_draft
-      draft.target_type = self.class.name
-      draft.target_id = self.id
+      draft.data = self.attributes 
+      draft.draftable_type = self.class.name
+      draft.draftable_id = self.id
       draft.user_id = user.try(:id)
       draft.user_type = user.try(:class).try(:name)
       draft.parent = self.send(self.class.draft_parent) if self.class.draft_parent
@@ -24,22 +22,16 @@ module Drafting
       end
     end
 
-    # Override this two methods if you want to change the way to dump/load data
-    def dump_to_draft
-      Marshal.dump(instance_values)
+    def clear_user_drafts
+      Draft.where(user: user).where(draftable_type: self.class.name, draftable_id: self.id).destroy_all
     end
 
-    def load_from_draft(string)
-      values = Marshal.load(string)
-
-      values.each do |name, value|
-        instance_variable_set("@#{name}", value)
-      end
+    def clear_drafts
+      Draft.where(draftable_type: self.class.name, draftable_id: self.id).destroy_all
     end
 
-
-    def drafts
-      Draft.where(target_type: self.class.name, target_id: self.id)
+    def drafted_by(user)
+      Draft.where(user_id: user.id).where(draftable: self).first
     end
 
   private

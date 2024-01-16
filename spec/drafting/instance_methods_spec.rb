@@ -38,7 +38,7 @@ describe Drafting::InstanceMethods do
            change(Message, :count).by(0)
 
       draft = Draft.find(message.draft_id)
-      expect(draft.target_type).to eq('Message')
+      expect(draft.draftable_type).to eq('Message')
       expect(draft.parent_id).to eq(topic.id)
       expect(draft.parent_type).to eq('Topic')
       expect(draft.user_id).to eq(user.id)

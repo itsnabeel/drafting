@@ -1,14 +1,17 @@
 class Draft < ActiveRecord::Base
+  belongs_to :draftable, polymorphic: true
   belongs_to :user, polymorphic: true
   belongs_to :parent, polymorphic: true
 
-  validates_presence_of :data, :target_type
+  validates_presence_of :data, :draftable_type
 
   def restore
-    target_type.constantize.from_draft(self)
+    draftable.update(data)
+    self.destroy
   end
 
-  def self.restore_all
-    find_each.map(&:restore)
+  def restore_attributes
+    draftable.assign_attributes(data)
   end
+
 end

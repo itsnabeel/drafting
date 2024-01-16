@@ -39,7 +39,7 @@ module Drafting
       extend Drafting::ClassMethods
 
       attr_accessor :draft_id
-      # after_create :clear_draft
+      has_many :drafts, as: :draftable, dependent: :destroy
     end
   end
 end
