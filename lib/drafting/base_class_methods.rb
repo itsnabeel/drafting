@@ -1,12 +1,13 @@
 module Drafting
   module BaseClassMethods
-    ALLOWED_DRAFT_OPTION_KEYS = [ :parent ]
+    ALLOWED_DRAFT_OPTION_KEYS = [ :parent, :childs ]
 
     def has_drafts(options={})
       raise ArgumentError unless options.is_a?(Hash)
       raise ArgumentError unless options.keys.all? { |k| ALLOWED_DRAFT_OPTION_KEYS.include?(k) }
 
       class_attribute :draft_parent
+      class_attribute :draft_childs
 
       if options[:parent]
         parent_class = self.reflect_on_all_associations(:belongs_to).find { |a| a.name == options[:parent] }.try(:klass)
@@ -34,6 +35,10 @@ module Drafting
 
         self.draft_parent = options[:parent]
       end
+      if options[:childs]
+        self.draft_childs = options[:childs]
+      end
+      
 
       include Drafting::InstanceMethods
       extend Drafting::ClassMethods

@@ -9,10 +9,34 @@ module Drafting
       draft.user_id = user.try(:id)
       draft.user_type = user.try(:class).try(:name)
       draft.parent = self.send(self.class.draft_parent) if self.class.draft_parent
-
       result = draft.save
+      self.create_child_drafts(draft) if result
       self.draft_id = draft.id if result
       result
+    end
+
+    def create_child_drafts(parent_draft)
+      if self.class.draft_childs.present?
+        self.class.draft_childs.each do |child|
+          association = self.class.reflect_on_all_associations.find { |a| a.name == child }
+          if association.present? && association.macro == :has_many
+            self.send(child).each do |associated_object| 
+              draft = Draft.where(user_id: parent_draft.user_id , draftable_type: associated_object.class.name, parent_id: parent_draft.id).first_or_initialize
+              draft.data = associated_object.attributes
+              draft.draftable_type = associated_object.class.name
+              draft.draftable_id = associated_object.id
+              draft.user_id = parent_draft.user.id
+              draft.user_type = parent_draft.user.class.name
+              draft.parent = parent_draft
+              draft.save
+            end
+          end
+        end
+      end
+    end
+
+    def child_drafts(parent_draft)
+      Draft.where(parent_id: parent_draft.id)
     end
 
     def update_draft(user, attributes)
