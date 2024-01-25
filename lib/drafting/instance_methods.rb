@@ -21,7 +21,11 @@ module Drafting
           association = self.class.reflect_on_all_associations.find { |a| a.name == child }
           if association.present? && association.macro == :has_many
             self.send(child).each do |associated_object| 
-              draft = Draft.where(user_id: parent_draft.user_id , draftable_type: associated_object.class.name, parent_id: parent_draft.id).first_or_initialize
+              if associated_object.id == nil
+                draft = Draft.new(user_id: parent_draft.user_id , draftable_type: associated_object.class.name, parent_id: parent_draft.id)
+              else
+                draft = Draft.where(user_id: parent_draft.user_id , draftable_type: associated_object.class.name, parent_id: parent_draft.id).first_or_initialize
+              end
               draft.data = associated_object.attributes
               draft.draftable_type = associated_object.class.name
               draft.draftable_id = associated_object.id
