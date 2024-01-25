@@ -8,7 +8,8 @@ class Draft < ActiveRecord::Base
 
   def restore
     draftable.update(data)
-    self.child_drafts(self).each do |child_draft|
+
+    self.child_drafts.each do |child_draft|
       child_draft.draftable.update(child_draft.data)
     end
     self.destroy
