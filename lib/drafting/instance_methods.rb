@@ -20,6 +20,9 @@ module Drafting
         self.class.draft_childs.each do |child|
           association = self.class.reflect_on_all_associations.find { |a| a.name == child }
           if association.present? && association.macro == :has_many
+
+            childs = parent_draft.child_drafts.where(draftable_type: child.to_s.camelize.singularize, draftable_id: nil)
+            childs.destroy_all
             self.send(child).each do |associated_object| 
               if associated_object.id == nil
                 draft = Draft.new(user_id: parent_draft.user_id , draftable_type: associated_object.class.name, parent_id: parent_draft.id)
@@ -39,9 +42,9 @@ module Drafting
       end
     end
 
-    def child_drafts(parent_draft)
-      Draft.where(parent_id: parent_draft.id)
-    end
+    # def child_drafts(parent_draft)
+    #   Draft.where(parent_id: parent_draft.id)
+    # end
 
     def update_draft(user, attributes)
       with_transaction_returning_status do
