@@ -62,7 +62,7 @@ module Drafting
     end
 
     def drafted_by(user)
-      Draft.where(user_id: user.id).where(draftable_type: self.class.name, draftable_id: self.id).first
+      Draft.where(user_id: user.id).where(draftable: self).first
     end
 
   private
