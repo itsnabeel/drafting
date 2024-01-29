@@ -27,7 +27,7 @@ module Drafting
               if associated_object.id == nil
                 draft = Draft.new(user_id: parent_draft.user_id , draftable_type: associated_object.class.name, parent_id: parent_draft.id)
               else
-                draft = Draft.where(user_id: parent_draft.user_id , draftable_type: associated_object.class.name, parent_id: parent_draft.id).first_or_initialize
+                draft = Draft.where(user_id: parent_draft.user_id , draftable_type: associated_object.class.name, draftable_id: associated_object.id, parent_id: parent_draft.id).first_or_initialize
               end
               draft.data = associated_object.attributes
               draft.draftable_type = associated_object.class.name
@@ -62,7 +62,7 @@ module Drafting
     end
 
     def drafted_by(user)
-      Draft.where(user_id: user.id).where(draftable: self).first
+      Draft.where(user_id: user.id).where(draftable_type: self.class.name, draftable_id: self.id).first
     end
 
   private
